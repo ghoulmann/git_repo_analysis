@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Analysis Results{% endblock %}
+
+{% block content %}
+    <h1>Analysis Results</h1>
+    
+    <h2>File Commit Age Heatmap</h2>
+    <div id="heatmap-age"></div>
+
+    <h2>File Change Frequency Heatmap</h2>
+    <div id="heatmap-frequency"></div>
+
+    <h2>File Commit Age</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Last Commit Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file, age in file_commit_age.items() %}
+            <tr>
+                <td>{{ file }}</td>
+                <td>{{ age }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>File Change Frequency</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Change Frequency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file, frequency in file_change_frequency.items() %}
+            <tr>
+                <td>{{ file }}</td>
+                <td>{{ frequency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Reference local Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+{% endblock %}

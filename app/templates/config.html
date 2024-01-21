@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Config Management{% endblock %}
+
+{% block content %}
+    <h1>Config Management</h1>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="jsonEditor" class="form-label">Edit Config</label>
+            <div id="jsonEditor" style="height: 400px;"></div>
+            <input type="hidden" name="new_config" id="hiddenConfig" value="{{ config | tojson }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Config</button>
+    </form>
+    
+    <!-- Include JSONEditor JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.3.5/jsoneditor.min.js"></script>
+
+    <script>
+        var editor = new JSONEditor(document.getElementById('jsonEditor'), {
+            mode: 'code', // You can choose 'tree', 'form', or 'code' based on your preference
+            onChange: function() {
+                var updatedConfig = editor.get();
+                document.getElementById('hiddenConfig').value = JSON.stringify(updatedConfig);
+            },
+            onError: function(err) {
+                console.error('JSONEditor Error:', err);
+            }
+        });
+
+        // Set initial config
+        editor.set({{ config | tojson }});
+    </script>
+{% endblock %}

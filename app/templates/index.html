@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Git Repository Analysis{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Git Repository Analysis</h1>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="repoPath" class="form-label">Repository Path</label>
+                <input type="text" class="form-control" id="repoPath" name="repo_path" required>
+            </div>
+            <div class="mb-3">
+                <label for="recentDays" class="form-label">Recent Days</label>
+                <input type="number" class="form-control" id="recentDays" name="recent_days">
+            </div>
+            <button type="submit" class="btn btn-primary">Analyze</button>
+        </form>
+    </div>
+{% endblock %}

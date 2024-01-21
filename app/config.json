@@ -1,0 +1,8 @@
+{
+    "repositories": [
+        "/path/to/repo1",
+        "/path/to/repo2",
+        "/path/to/repo3"
+    ],
+    "default_recent_days": 30
+}
