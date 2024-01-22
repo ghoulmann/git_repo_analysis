@@ -10,17 +10,17 @@
 
     <!-- Ensure data contains the path for the age heatmap -->
     {% if data.get('bar_chart_age_path') %}
-        <h3>File Commit Age Heatmap</h3>
+        <h3>Days Since Last Commit</h3>
         <img src="{{ url_for('static', filename=data['bar_chart_age_path']) }}" alt="Bar Chart of File Commit Age">
     {% endif %}
 
     <!-- Ensure data contains the path for the frequency heatmap -->
     {% if data.get('bar_chart_frequency_path') %}
-        <h3>File Change Frequency Heatmap</h3>
+        <h3>Commits in Period</h3>
         <img src="{{ url_for('static', filename=data['bar_chart_frequency_path']) }}" alt="Bar Chart of File Change Frequency">
     {% endif %}
 
-    <h3>File Commit Age</h3>
+    <h3>Days Since Last Commit</h3>
     <table class="table">
         <thead>
             <tr>
@@ -38,7 +38,7 @@
         </tbody>
     </table>
 
-    <h3>File Change Frequency</h3>
+    <h3>PRs During Period</h3>
     <table class="table">
         <thead>
             <tr>
