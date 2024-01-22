@@ -1,26 +1,35 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Analysis Results{% endblock %}
+{% block title %}Git Repository Analysis Results{% endblock %}
 
 {% block content %}
-    <h1>Analysis Results</h1>
-    
-    <h2>File Commit Age Heatmap</h2>
-    <div id="heatmap-age"></div>
+<h1>Analysis Results</h1>
 
-    <h2>File Change Frequency Heatmap</h2>
-    <div id="heatmap-frequency"></div>
+{% for repo_path, data in results.items() %}
+    <h2>Repository: {{ repo_path }}</h2>
 
-    <h2>File Commit Age</h2>
+    <!-- Ensure data contains the path for the age heatmap -->
+    {% if data.get('bar_chart_age_path') %}
+        <h3>File Commit Age Heatmap</h3>
+        <img src="{{ url_for('static', filename=data['bar_chart_age_path']) }}" alt="Bar Chart of File Commit Age">
+    {% endif %}
+
+    <!-- Ensure data contains the path for the frequency heatmap -->
+    {% if data.get('bar_chart_frequency_path') %}
+        <h3>File Change Frequency Heatmap</h3>
+        <img src="{{ url_for('static', filename=data['bar_chart_frequency_path']) }}" alt="Bar Chart of File Change Frequency">
+    {% endif %}
+
+    <h3>File Commit Age</h3>
     <table class="table">
         <thead>
             <tr>
                 <th>File</th>
-                <th>Last Commit Age</th>
+                <th>Last Commit Age (Days)</th>
             </tr>
         </thead>
         <tbody>
-            {% for file, age in file_commit_age.items() %}
+            {% for file, age in data.get('sorted_age', {}).items() %}
             <tr>
                 <td>{{ file }}</td>
                 <td>{{ age }}</td>
@@ -29,7 +38,7 @@
         </tbody>
     </table>
 
-    <h2>File Change Frequency</h2>
+    <h3>File Change Frequency</h3>
     <table class="table">
         <thead>
             <tr>
@@ -38,7 +47,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for file, frequency in file_change_frequency.items() %}
+            {% for file, frequency in data.get('sorted_frequency', {}).items() %}
             <tr>
                 <td>{{ file }}</td>
                 <td>{{ frequency }}</td>
@@ -46,7 +55,7 @@
             {% endfor %}
         </tbody>
     </table>
+{% endfor %}
 
-    <!-- Reference local Bootstrap JS -->
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 {% endblock %}
+

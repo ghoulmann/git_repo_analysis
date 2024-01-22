@@ -1,95 +1,55 @@
+from git import Repo, GitCommandError
 import os
-import pandas as pd
-from datetime import datetime
-from collections import defaultdict
-from git import Repo
+import logging
+from datetime import datetime, timezone
 
-
-def analyze_git_repo(repo_path, recent_days=30):
+def analyze_git_repo(repo_path, recent_days=60, file_extensions=None):
     """
-    Analyze a Git repository and collect data on file commit age and change frequency.
+    Analyze a Git repository for file commit age and change frequency.
 
     Args:
         repo_path (str): Path to the Git repository.
-        recent_days (int, optional): Number of recent days to consider for change frequency. Default is 30 days.
+        recent_days (int, optional): Number of recent days to consider. Defaults to 60.
+        file_extensions (list, optional): List of file extensions to filter by. Defaults to None.
 
     Returns:
-        tuple: Two dictionaries containing file commit age and change frequency data.
+        dict, dict: Two dictionaries containing file commit age and change frequency.
     """
-    file_commit_age = defaultdict(int)
-    file_change_frequency = defaultdict(int)
+    file_commit_age = {}
+    file_change_frequency = {}
 
-    for root, dirs, files in os.walk(repo_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            file_name = os.path.relpath(file_path, repo_path)
+    try:
+        repo = Repo(repo_path)
+    except GitCommandError as e:
+        logging.error(f"Error accessing repository: {e}")
+        return file_commit_age, file_change_frequency
 
-            last_commit_date = get_last_commit_date(file_path)
-            commit_count = get_commit_count(file_path, recent_days)
+    for commit in repo.iter_commits('HEAD', since=f"{recent_days}.days"):
+        for file in commit.stats.files:
+            if file_extensions is None or any(file.endswith(ext) for ext in file_extensions):
+                file_change_frequency[file] = file_change_frequency.get(file, 0) + 1
 
-            file_commit_age[file_name] = commit_age_in_days(last_commit_date)
-            file_change_frequency[file_name] = commit_count
+    for commit in repo.iter_commits('HEAD'):
+        for file in commit.stats.files:
+            if file_extensions is None or any(file.endswith(ext) for ext in file_extensions):
+                file_commit_age[file] = commit_age_in_days(commit.committed_datetime)
 
     return file_commit_age, file_change_frequency
-
-def get_last_commit_date(file_path):
-    """
-    Get the last commit date of a file in a Git repository.
-
-    Args:
-        file_path (str): Path to the file.
-
-    Returns:
-        datetime: Last commit date of the file.
-    """
-    try:
-        repo = Repo(file_path, search_parent_directories=True)
-        commit = repo.blame("HEAD", file_path).get_current_commit()
-        commit_date = datetime.fromtimestamp(commit.committed_date)
-
-        return commit_date
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-
-def get_commit_count(file_path, recent_days):
-    """
-    Get the commit count of a file in a specified recent period.
-
-    Args:
-        file_path (str): Path to the file.
-        recent_days (int): Number of recent days to consider.
-
-    Returns:
-        int: Commit count of the file in the recent period.
-    """
-    try:
-        repo = Repo(file_path, search_parent_directories=True)
-        since_date = datetime.now() - timedelta(days=recent_days)
-        
-        # Count commits within the specified recent_days
-        commit_count = sum(1 for commit in repo.iter_commits('HEAD', paths=file_path, since=since_date))
-
-        return commit_count
-    except Exception as e:
-        print(f"Error: {e}")
-        return 0  # Return 0 in case of an error or no commits
-
-
 
 def commit_age_in_days(commit_date):
     """
     Calculate the age of a commit in days.
-
-    Args:
-        commit_date (datetime): Date of the commit.
-
-    Returns:
-        int: Age of the commit in days.
     """
     if commit_date:
-        current_date = datetime.now()
+        current_date = datetime.now(timezone.utc)
         age_in_days = (current_date - commit_date).days
         return age_in_days
     else:
-        return 0  # Return 0 if commit_date is None or invalid
+        return 0
+
+if __name__ == '__main__':
+    path = '/home/rik/Documents/github/vale'
+    file_exts = ['.py', '.md']  # Example file extensions
+    age, frequency = analyze_git_repo(path, file_extensions=file_exts)
+    print(age)
+    print(frequency)

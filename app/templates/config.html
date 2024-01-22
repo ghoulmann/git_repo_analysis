@@ -4,31 +4,31 @@
 
 {% block content %}
     <h1>Config Management</h1>
-    <form method="POST">
+    <form method="POST" action="{{ url_for('config') }}">
         <div class="mb-3">
             <label for="jsonEditor" class="form-label">Edit Config</label>
             <div id="jsonEditor" style="height: 400px;"></div>
-            <input type="hidden" name="new_config" id="hiddenConfig" value="{{ config | tojson }}">
+            <textarea name="new_config" id="hiddenConfig" style="display:none;">{{ config | tojson }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Save Config</button>
     </form>
     
-    <!-- Include JSONEditor JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.3.5/jsoneditor.min.js"></script>
+    <!-- Include Vanilla JSONEditor JS -->
+    <script type="module">
+      import { JSONEditor } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor/standalone.js'
 
-    <script>
-        var editor = new JSONEditor(document.getElementById('jsonEditor'), {
-            mode: 'code', // You can choose 'tree', 'form', or 'code' based on your preference
-            onChange: function() {
-                var updatedConfig = editor.get();
-                document.getElementById('hiddenConfig').value = JSON.stringify(updatedConfig);
-            },
-            onError: function(err) {
-                console.error('JSONEditor Error:', err);
-            }
-        });
+      let content = {
+        json: {{ config | tojson | safe }}
+      };
 
-        // Set initial config
-        editor.set({{ config | tojson }});
+      const editor = new JSONEditor({
+        target: document.getElementById('jsonEditor'),
+        props: {
+          content,
+          onChange: (updatedContent) => {
+            document.getElementById('hiddenConfig').value = JSON.stringify(updatedContent.json);
+          }
+        }
+      });
     </script>
 {% endblock %}

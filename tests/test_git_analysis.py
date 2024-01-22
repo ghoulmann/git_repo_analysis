@@ -9,7 +9,7 @@ class GitAnalysisTestCase(unittest.TestCase):
 
     def setUp(self):
         # Create a temporary Git repository with sample data for testing
-        self.test_repo_path = '/tmp/test_repo'
+        self.test_repo_path = 'test_repo'
         self.create_test_repo()
     
     def tearDown(self):

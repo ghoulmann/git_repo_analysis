@@ -1,19 +1,31 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Git Repository Analysis{% endblock %}
+{% block title %}Git Data Dashboard - Analyze Repository{% endblock %}
+{% block header %}Analyze Repository{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1>Git Repository Analysis</h1>
-        <form method="POST">
+    <div class="container mt-4">
+        <form method="POST" class="card p-4">
             <div class="mb-3">
-                <label for="repoPath" class="form-label">Repository Path</label>
-                <input type="text" class="form-control" id="repoPath" name="repo_path" required>
+                <label for="repo_path" class="form-label">Repository Path:</label>
+                <input type="text" id="repo_path" name="repo_path" class="form-control" required>
             </div>
+
             <div class="mb-3">
-                <label for="recentDays" class="form-label">Recent Days</label>
-                <input type="number" class="form-control" id="recentDays" name="recent_days">
+                <label for="recent_days" class="form-label">Recent Days (default is 30):</label>
+                <input type="number" id="recent_days" name="recent_days" class="form-control" value="30">
             </div>
+
+            <div class="mb-3">
+                <label for="file_extensions" class="form-label">File Extensions (comma-separated, e.g., .py,.js):</label>
+                <input type="text" id="file_extensions" name="file_extensions" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="max_files" class="form-label">Max Files (default is 10):</label>
+                <input type="number" id="max_files" name="max_files" class="form-control" value="10">
+            </div>
+
             <button type="submit" class="btn btn-primary">Analyze</button>
         </form>
     </div>
