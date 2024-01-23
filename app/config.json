@@ -2,8 +2,5 @@
     "default_recent_days": 15,
     "file_extensions": [],
     "max_files": 10,
-    "repositories": [
-        "/home/rik/Documents/github/vale",
-        "/home/rik/Documents/github/graph_event_category_frequency"
-    ]
+    "repositories": []
 }
